@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LSPD Intelligence System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 1. ปรับพื้นหลังและฟอนต์ให้ทำงานเบาขึ้น */
+        body { 
+            background-color: #020617; 
+            color: #f1f5f9; 
+            font-family: 'Inter', sans-serif; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 2. ปรับสไตล์ Glass ให้เป็นการใช้สีทึบโปร่งแสงแทนการ Blur (แก้แล็ก 100%) */
+        .glass { 
+            background-color: rgba(15, 23, 42, 0.95); 
+            border: 1px solid rgba(51, 65, 85, 0.5); 
+        }
+
+        /* 3. การจัดเรียง Navigation */
+        .nav-link { 
+            transition: all 0.2s ease-in-out; 
+            opacity: 0.6; 
+            cursor: pointer; 
+            padding: 4px 8px;
+        }
+        .nav-link.active { 
+            opacity: 1; 
+            color: #3b82f6; 
+            border-bottom: 2px solid #3b82f6; 
+        }
+
+        /* 4. หน้าที่ถูกซ่อน */
+        .hidden { display: none; }
+
+        /* 5. การจัดเรียง Card กฎหมาย (เน้น Render เร็วและลื่น) */
+        .law-card { 
+            background-color: rgba(15, 23, 42, 0.8);
+            border-left-width: 4px; 
+            border-top: 1px solid rgba(51, 65, 85, 0.3);
+            border-right: 1px solid rgba(51, 65, 85, 0.3);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+            transition: background-color 0.2s, transform 0.2s;
+            will-change: transform; /* ช่วยให้เบราว์เซอร์เตรียมพร้อมการเคลื่อนไหว */
+        }
+
+        /* เอฟเฟกต์เวลาเอาเมาส์ไปชี้ (Hover) */
+        .law-card:hover { 
+            transform: translateY(-2px); 
+            background-color: rgba(30, 41, 59, 1);
+        }
+
+        /* 6. ปรับแต่ง Scrollbar (แถมให้เพื่อความสวยงามโดยรวม) */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-5xl mx-auto">
+        
+        <nav class="glass flex justify-between items-center p-4 rounded-2xl sticky top-4 z-50 shadow-2xl mb-8">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('dashboard')">
+                <i class="fas fa-shield-halved text-2xl text-blue-500"></i>
+                <span class="font-bold tracking-tighter text-lg uppercase text-white">LSPD <span class="text-blue-400 font-medium text-xs">LAWS</span></span>
+            </div>
+            <div class="flex gap-4 md:gap-8">
+                <button onclick="showSection('dashboard')" id="btn-dash" class="nav-link active text-[10px] md:text-xs font-bold uppercase tracking-widest">Dashboard</button>
+                <button onclick="showSection('database')" id="btn-db" class="nav-link text-[10px] md:text-xs font-bold uppercase tracking-widest">Law Records</button>
+            </div>
+        </nav>
+
+        <section id="section-dashboard" class="animate-in fade-in duration-700">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass stat-card p-6 rounded-2xl shadow-lg">
+                    <h4 class="text-slate-400 text-xs font-bold uppercase mb-2">SYSTEM STATUS</h4>
+                    <div class="flex items-center gap-3">
+                        <span class="flex h-3 w-3 rounded-full bg-green-500 animate-pulse"></span>
+                        <span class="text-2xl font-bold text-white">Online</span>
+                    </div>
+                </div>
+                <div class="glass stat-card p-6 rounded-2xl shadow-lg border-t-blue-400">
+                    <h4 class="text-slate-400 text-xs font-bold uppercase mb-2">JURISDICTION</h4>
+                    <div class="text-2xl font-bold text-white uppercase">All Los Santos</div>
+                </div>
+                <div class="glass stat-card p-6 rounded-2xl shadow-lg border-t-amber-500">
+                    <h4 class="text-slate-400 text-xs font-bold uppercase mb-2">WATCH LEVEL</h4>
+                    <div class="text-2xl font-bold text-amber-500 uppercase">Code 2</div>
+                </div>
+            </div>
+
+            <div class="glass p-8 rounded-3xl shadow-2xl">
+                <h2 class="text-3xl font-black text-white mb-6 uppercase tracking-tight">📜 ข้อบังคับ LSPD: ขอบเขตและเพดานการชิงทรัพย์</h2>
+                
+                <div class="space-y-8 text-slate-300">
+                    <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                        <h3 class="text-blue-400 font-bold mb-4 uppercase flex items-center gap-2">
+                            <i class="fas fa-money-bill-wave"></i> 1. เพดานเงินสด (Cash Cap) 
+                        </h3>
+                        <p class="mb-4 text-sm">หากผู้ถูกปล้นพกเงินติดตัวจำนวนมาก <strong>ห้ามปล้นเงินทั้งหมด</strong> ให้ยึดตามเกณฑ์ดังนี้: </p>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1"><span>ยอดเงินไม่เกิน $10,000:</span> <span class="text-green-400 font-bold">ปล้นได้ทั้งหมด</span></li>
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1"><span>ยอดเงิน $10,001 - $100,000:</span> <span class="text-yellow-400 font-bold">สูงสุด 50% ของที่มี</span></li>
+                            <li class="flex justify-between border-b border-slate-700/50 pb-1"><span>ยอดเงิน $100,001 ขึ้นไป:</span> <span class="text-red-400 font-bold">สูงสุดไม่เกิน $50,000</span></li>
+                        </ul>
+                        <p class="text-[11px] mt-4 italic text-slate-500">* เพื่อให้ผู้ถูกปล้นยังเหลือทุนตั้งตัว ไม่หมดตัวในพริบตา </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                            <h3 class="text-red-400 font-bold mb-4 uppercase flex items-center gap-2 text-sm">
+                                <i class="fas fa-hand-holding-slash"></i> 2. อาวุธและอุปกรณ์ 
+                            </h3>
+                            <ul class="space-y-3 text-xs leading-relaxed">
+                                <li><strong class="text-white">อาวุธถูกกฎหมาย:</strong> ปล้นได้ (โจรจะโดนข้อหาปืนเถื่อนทันทีหากโดนจับ) </li>
+                                <li class="text-red-400 font-bold underline">อาวุธหน่วยงาน (LSPD/EMS/Mechanic): ห้ามปล้นเด็ดขาด! </li>
+                                <li><strong class="text-white">อุปกรณ์ทำกิน:</strong> ห้ามปล้นอุปกรณ์อาชีพพื้นฐาน </li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                            <h3 class="text-amber-400 font-bold mb-4 uppercase flex items-center gap-2 text-sm">
+                                <i class="fas fa-box-open"></i> 3. ทรัพย์สินส่วนตัวอื่นๆ 
+                            </h3>
+                            <ul class="space-y-3 text-xs leading-relaxed">
+                                <li><strong class="text-white">โทรศัพท์/GPS:</strong> ปล้นได้เพื่อตัดการติดต่อ แต่ต้องคืนหรือทิ้งในจุดที่หาเจอง่าย </li>
+                                <li><strong class="text-white">รถส่วนตัว:</strong> ปล้นเพื่อหลบหนีได้ (Carjacking) แต่ห้ามขายลงโกดังเถื่อน </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-500/10 border border-red-500/50 p-6 rounded-2xl shadow-inner">
+                        <h3 class="text-red-500 font-bold mb-3 uppercase flex items-center gap-2">
+                            <i class="fas fa-gavel"></i> บทลงโทษโจรที่ละเมิดเพดาน [cite: 2]
+                        </h3>
+                        <ol class="list-decimal list-inside space-y-2 text-sm text-slate-400">
+                            <li>แจ้งข้อหา 211 (อุกฉกรรจ์) ปรับและจำคุกสูงสุด [cite: 2]</li>
+                            <li>คืนทรัพย์สินส่วนเกินทันทีผ่าน Admin หรือ Chief [cite: 2]</li>
+                            <li>Blacklist บัญชีดำอาชญากร และถูกเฝ้าระวังโดย S.W.A.T. [cite: 2]</li>
+                        </ol>
+                    </div>
+
+                    <button onclick="showSection('database')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-900/30 uppercase tracking-widest">
+                        เข้าสู่ฐานข้อมูลกฎหมายเต็มรูปแบบ <i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-database" class="hidden animate-in slide-in-from-bottom-4 duration-500 pb-20">
+    
+            <div class="flex justify-center gap-8 mb-8 border-b border-slate-800 pb-2">
+                <div onclick="switchType('Penal')" id="tab-penal" class="nav-link active text-xs font-bold uppercase tracking-widest py-2 px-4">Penal Code</div>
+                <div onclick="switchType('Traffic')" id="tab-traffic" class="nav-link text-xs font-bold uppercase tracking-widest py-2 px-4">Traffic Stop</div>
+            </div>
+
+            <div class="mb-8 px-2">
+                <h1 id="page-title" class="text-4xl font-black text-white uppercase tracking-tight">Penal Code</h1>
+                <p id="page-subtitle" class="text-slate-400 text-sm mt-1">ฐานข้อมูลกฎหมายและการลงโทษกรมตำรวจ</p>
+            </div>
+
+            <div class="glass p-5 rounded-2xl mb-8">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-4 top-4 text-slate-500"></i>
+                    <input type="text" id="search" placeholder="ค้นหาตามรหัส หรือ ชื่อความผิด..." 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+            </div>
+
+            <div id="law-container" class="space-y-4">
+                </div>
+        </section>
+    </div>
+
+    <script>
+        // *** วาง URL ของ Google Apps Script ของคุณที่นี่ ***
+        const API_URL = "https://script.google.com/macros/s/AKfycbzFocmsh-R9_hgruDSfO38K3vWfXlEVkGdsPr1BnZArbL4GWjFRgYpLrFyt74feNYyM/exec";
+        
+        let allData = { penal: [], traffic: [] };
+        let currentType = 'Penal';
+
+        // ระบบสลับหน้า Dashboard และ Database
+        function showSection(section) {
+            document.getElementById('section-dashboard').classList.toggle('hidden', section !== 'dashboard');
+            document.getElementById('section-database').classList.toggle('hidden', section !== 'database');
+            document.getElementById('btn-dash').classList.toggle('active', section === 'dashboard');
+            document.getElementById('btn-db').classList.toggle('active', section === 'database');
+            
+            // ถ้าเข้าหน้า Database ให้เริ่มที่ Penal Code เสมอ
+            if(section === 'database') {
+                switchType('Penal');
+            }
+        }
+
+        // ระบบสลับหมวดหมู่กฎหมาย (Penal / Traffic)
+        function switchType(type) {
+            currentType = type;
+            
+            // สลับความสว่างของปุ่ม Tab (ถ้าคุณมีปุ่มสลับในหน้า Database)
+            const tabPenal = document.getElementById('tab-penal');
+            const tabTraffic = document.getElementById('tab-traffic');
+            if(tabPenal) tabPenal.classList.toggle('active', type === 'Penal');
+            if(tabTraffic) tabTraffic.classList.toggle('active', type === 'Traffic');
+            
+            // เปลี่ยนหัวข้อ
+            const title = document.getElementById('page-title');
+            if(title) title.innerText = type === 'Penal' ? "Penal Code" : "Traffic Stop";
+            
+            applyFilters();
+        }
+
+        async function fetchLaws() {
+            try {
+                const response = await fetch(API_URL);
+                allData = await response.json();
+                
+                // ตรวจสอบว่าถ้าข้อมูลมาเป็น Array ปกติ ให้ใส่ใน penal ไว้ก่อนเพื่อไม่ให้หน้าว่าง
+                if (Array.isArray(allData)) {
+                    const temp = allData;
+                    allData = { penal: temp, traffic: [] };
+                }
+                
+                applyFilters();
+            } catch (error) {
+                document.getElementById('law-container').innerHTML = `<p class="text-red-500 text-center py-10 font-bold uppercase">Database Connection Error</p>`;
+            }
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            
+            // เลือกชุดข้อมูลตามประเภทที่เลือก (Penal หรือ Traffic)
+            const dataToFilter = currentType === 'Penal' ? allData.penal : allData.traffic;
+            
+            const filtered = dataToFilter.filter(l => {
+                return l.Code.toString().includes(searchTerm) || l.Offense.toLowerCase().includes(searchTerm);
+            });
+
+            renderLaws(filtered);
+        }
+
+        function renderLaws(data) {
+            const container = document.getElementById('law-container');
+            if (!container) return;
+
+            container.innerHTML = data.length === 0 ? `<p class="text-center py-20 text-slate-600 uppercase tracking-widest italic text-sm">-- ไม่พบข้อมูลในหมวดนี้ --</p>` : '';
+
+            data.forEach(item => {
+                const isFelony = item.Type && item.Type.toLowerCase() === 'felony';
+                container.innerHTML += `
+                    <div class="law-card glass border-l-4 ${isFelony ? 'border-red-600' : 'border-yellow-500'} p-5 rounded-r-2xl shadow-xl mb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[9px] font-black uppercase tracking-widest ${isFelony ? 'text-red-500' : 'text-yellow-500'}">${item.Type || 'Unknown'}</span>
+                                <h3 class="text-lg font-bold text-white tracking-tight">#${item.Code} - ${item.Offense}</h3>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-green-400 font-mono font-bold text-lg leading-none">$${Number(item.Fine || 0).toLocaleString()}</div>
+                                <span class="text-[10px] text-slate-500 font-bold uppercase mt-1 inline-block">${item.Jail || 0} Mins</span>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 text-xs mt-4 italic leading-relaxed border-t border-slate-700/50 pt-3">${item.Notes || '-'}</p>
+                    </div>`;
+            });
+        }
+
+        document.getElementById('search').addEventListener('input', applyFilters);
+        
+        // เรียกโหลดข้อมูลครั้งแรก
+        fetchLaws();
+    </script>
+</body>
+</html>
