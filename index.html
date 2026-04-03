@@ -54,6 +54,11 @@
             background-color: rgba(30, 41, 59, 1);
         }
 
+        /* เพิ่มในส่วน <style> */
+        .logo-glow {
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+        }
+
         /* 6. ปรับแต่ง Scrollbar (แถมให้เพื่อความสวยงามโดยรวม) */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #020617; }
@@ -64,9 +69,13 @@
     <div class="max-w-5xl mx-auto">
         
         <nav class="glass flex justify-between items-center p-4 rounded-2xl sticky top-4 z-50 shadow-2xl mb-8">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('dashboard')">
-                <i class="fas fa-shield-halved text-2xl text-blue-500"></i>
-                <span class="font-bold tracking-tighter text-lg uppercase text-white">LSPD <span class="text-blue-400 font-medium text-xs">LAWS</span></span>
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showSection('dashboard')">
+                <img src="LSPD.webp" alt="LSPD Logo" class="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]">
+                
+                <div class="flex flex-col leading-none">
+                    <span class="font-black tracking-tighter text-xl uppercase text-white">LSPD LAWS</span>
+                    <span class="text-blue-400 font-bold text-[10px] uppercase tracking-widest">Intelligence System</span>
+                </div>
             </div>
             <div class="flex gap-4 md:gap-8">
                 <button onclick="showSection('dashboard')" id="btn-dash" class="nav-link active text-[10px] md:text-xs font-bold uppercase tracking-widest">Dashboard</button>
